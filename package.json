@@ -1,0 +1,12 @@
+{
+  "name": "ikachi",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "repository": "https://github.com/yi-fan-song/ikachi.git",
+  "author": "yi fan song <yfsong00@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0"
+  }
+}

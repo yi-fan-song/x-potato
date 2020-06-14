@@ -1,1 +1,3 @@
 # ikachi
+
+`yarn install`
