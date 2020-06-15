@@ -20,36 +20,63 @@ client.on('message', message => {
 	if (!message.guild) return;
 	
 	if (message.content.startsWith(';move')) {
-		var fromStart = message.content.indexOf('"');
-		var fromEnd = message.content.indexOf('"', fromStart + 1);
 
-		var toStart = message.content.indexOf('"', fromEnd + 1);
-		var toEnd = message.content.indexOf('"', toStart + 1);
+		if (!message.mentions.members) {
+			var fromStart = message.content.indexOf('"');
+			var fromEnd = message.content.indexOf('"', fromStart + 1);
 
-		if (fromStart < 0 || fromEnd < 0 || toStart < 0 || toEnd < 0) {
-			// TODO: make custom error handling functions
-			message.reply('Failed to move users: missing origin channel or destination channel.');
-		}
-		var from = message.content.substring(fromStart, fromEnd);
-		var to = message.content.substring(toStart, toEnd);
+			var toStart = message.content.indexOf('"', fromEnd + 1);
+			var toEnd = message.content.indexOf('"', toStart + 1);
 
-		var fromChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: from}));
-		if (!fromChannel) {
-			message.reply('Failed to move users: could not resolve origin channel.');
-		}
-		var toChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: to}));
-		if (!toChannel) {
-			message.reply('Failed to move users: could not resolve destination channel.');
-		}
-        
-		const user = message.mentions.users.first();
-
-		if (user) {
-			const member = message.guild.member(user);
-			if (member) {
-					member.voice.setChannel();
+			if (fromStart < 0 || fromEnd < 0 || toStart < 0 || toEnd < 0) {
+				// TODO: make custom error handling functions
+				message.reply('Failed to move users: missing origin channel or destination channel.');
 			}
+			var from = message.content.substring(fromStart, fromEnd);
+			var to = message.content.substring(toStart, toEnd);
+
+			var fromChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: from}));
+			if (!fromChannel) {
+				message.reply('Failed to move users: could not resolve origin channel.');
+			}
+			var toChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: to}));
+			if (!toChannel) {
+				message.reply('Failed to move users: could not resolve destination channel.');
+			}
+			
+			var members = fromChannel.members;
+			if (!members) {
+				message.reply('Failed to move users: there are no users to move.');
+				return;
+			}
+			members.each(member => {
+				member.second.voice.setChannel(toChannel);
+			});
 		}
+
+		else {
+			var toStart = message.content.indexOf('"', fromEnd + 1);
+			var toEnd = message.content.indexOf('"', toStart + 1);
+
+			if (toStart < 0 || toEnd < 0) {
+				// TODO: make custom error handling functions (?)
+				message.reply('Failed to move users: missing destination channel.');
+			}
+			var to = message.content.substring(toStart, toEnd);
+
+			var toChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: to}));
+			if (!toChannel) {
+				message.reply('Failed to move users: could not resolve destination channel.');
+			}
+
+			var members = message.mentions.members;
+			members.each(pair => {
+				var member = pair.second.voice;
+				if (member.connection.status = 0) member.setChannel(toChannel);
+			});
+		}
+
+		message.reply('Users moved successfully!')
 	}
 });
 
