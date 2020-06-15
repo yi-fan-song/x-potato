@@ -1,4 +1,4 @@
-import discord, { DiscordAPIError } from 'discord.js';
+import discord from 'discord.js';
 
 import dotenv from 'dotenv';
 
@@ -31,6 +31,7 @@ client.on('message', message => {
 			if (fromStart < 0 || fromEnd < 0 || toStart < 0 || toEnd < 0) {
 				// TODO: make custom error handling functions
 				message.reply('Failed to move users: missing origin channel or destination channel.');
+				return;
 			}
 			var from = message.content.substring(fromStart, fromEnd);
 			var to = message.content.substring(toStart, toEnd);
@@ -38,10 +39,12 @@ client.on('message', message => {
 			var fromChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: from}));
 			if (!fromChannel) {
 				message.reply('Failed to move users: could not resolve origin channel.');
+				return;
 			}
 			var toChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: to}));
 			if (!toChannel) {
 				message.reply('Failed to move users: could not resolve destination channel.');
+				return;
 			}
 			
 			var members = fromChannel.members;
@@ -50,29 +53,30 @@ client.on('message', message => {
 				return;
 			}
 			members.each(member => {
-				member.second.voice.setChannel(toChannel);
+				member.voice.setChannel(toChannel);
 			});
-		}
-
-		else {
-			var toStart = message.content.indexOf('"', fromEnd + 1);
+		} else {
+			var toStart = message.content.indexOf('"');
 			var toEnd = message.content.indexOf('"', toStart + 1);
 
 			if (toStart < 0 || toEnd < 0) {
 				// TODO: make custom error handling functions (?)
 				message.reply('Failed to move users: missing destination channel.');
+				return;
 			}
 			var to = message.content.substring(toStart, toEnd);
 
 			var toChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: to}));
 			if (!toChannel) {
 				message.reply('Failed to move users: could not resolve destination channel.');
+				return;
 			}
 
 			var members = message.mentions.members;
-			members.each(pair => {
-				var member = pair.second.voice;
-				if (member.connection.status = 0) member.setChannel(toChannel);
+			members.each((member) => {
+				if (member.voice.connection.status = 0) {
+					member.voice.setChannel(toChannel);
+				}
 			});
 		}
 
