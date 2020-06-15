@@ -1,8 +1,26 @@
-import discord from 'discord.js';
+/**
+ * x-potato is a discord bot offering general utilities and server moderation tools
+ * Copyright (C) 2020 Yi Fan Song <yfsong00@gmail.com>, Zikai Qin<zikaiqin99@gmail.com>
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ **/
 
-import dotenv from 'dotenv';
+import * as discord from 'discord.js';
 
-var result = dotenv.config();
+import { config } from 'dotenv';
+
+var result = config();
 if (result.error) {
 	throw result.error;
 }
@@ -18,10 +36,12 @@ client.on('ready', () => {
 client.on('message', message => {
   // Ignore messages that aren't from a guild
 	if (!message.guild) return;
+
+	if (!message.member.permissions.has(discord.Permissions.FLAGS.ADMINISTRATOR)) return;
 	
 	if (message.content.startsWith(';move')) {
 
-		if (!message.mentions.members) {
+		if (!message.mentions.members || message.mentions.members.size == 0) {
 			var fromStart = message.content.indexOf('"');
 			var fromEnd = message.content.indexOf('"', fromStart + 1);
 
@@ -33,15 +53,19 @@ client.on('message', message => {
 				message.reply('Failed to move users: missing origin channel or destination channel.');
 				return;
 			}
-			var from = message.content.substring(fromStart, fromEnd);
-			var to = message.content.substring(toStart, toEnd);
+			var from = message.content.substring(fromStart + 1, fromEnd);
+			var to = message.content.substring(toStart + 1, toEnd);
 
-			var fromChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: from}));
+			var fromChannel = message.guild.channels.cache.find((channel) => {
+				return channel.name == from;
+			});
 			if (!fromChannel) {
 				message.reply('Failed to move users: could not resolve origin channel.');
 				return;
 			}
-			var toChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: to}));
+			var toChannel = message.guild.channels.cache.find((channel) => {
+				return channel.name == to;
+			});
 			if (!toChannel) {
 				message.reply('Failed to move users: could not resolve destination channel.');
 				return;
@@ -64,9 +88,11 @@ client.on('message', message => {
 				message.reply('Failed to move users: missing destination channel.');
 				return;
 			}
-			var to = message.content.substring(toStart, toEnd);
+			var to = message.content.substring(toStart + 1, toEnd);
 
-			var toChannel = message.guild.channels.resolve(new discord.GuildChannel(message.guild, {name: to}));
+			var toChannel = message.guild.channels.cache.find((channel) => {
+				return channel.name == to;
+			});
 			if (!toChannel) {
 				message.reply('Failed to move users: could not resolve destination channel.');
 				return;
@@ -74,8 +100,11 @@ client.on('message', message => {
 
 			var members = message.mentions.members;
 			members.each((member) => {
-				if (member.voice.connection.status = 0) {
+				if (member.voice) {
 					member.voice.setChannel(toChannel);
+				} else {
+					message.reply('oops, something failed');
+					return;
 				}
 			});
 		}
