@@ -1,0 +1,20 @@
+{
+  "name": "x-potato",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "repository": "https://github.com/yi-fan-song/x-potato.git",
+  "author": "yi fan song <yfsong00@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "start": "node --inspect=5858 -r ts-node/register ./"
+  },
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.13"
+  }
+}
