@@ -41,7 +41,7 @@ client.on('message', message => {
 	
 	if (message.content.startsWith(';move')) {
 
-		if (!message.mentions.members || message.mentions.members.size == 0) {
+		if (!message.mentions.members || message.mentions.members.size === 0) {
 			var fromStart = message.content.indexOf('"');
 			var fromEnd = message.content.indexOf('"', fromStart + 1);
 
@@ -57,14 +57,14 @@ client.on('message', message => {
 			var to = message.content.substring(toStart + 1, toEnd);
 
 			var fromChannel = message.guild.channels.cache.find((channel) => {
-				return channel.name == from;
+				return channel.name === from;
 			});
 			if (!fromChannel) {
 				message.reply('Failed to move users: could not resolve origin channel.');
 				return;
 			}
 			var toChannel = message.guild.channels.cache.find((channel) => {
-				return channel.name == to;
+				return channel.name === to;
 			});
 			if (!toChannel) {
 				message.reply('Failed to move users: could not resolve destination channel.');
@@ -91,7 +91,7 @@ client.on('message', message => {
 			var to = message.content.substring(toStart + 1, toEnd);
 
 			var toChannel = message.guild.channels.cache.find((channel) => {
-				return channel.name == to;
+				return channel.name === to;
 			});
 			if (!toChannel) {
 				message.reply('Failed to move users: could not resolve destination channel.');
